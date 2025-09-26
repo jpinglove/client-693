@@ -23,7 +23,7 @@
 </template>
 
 <script>
-	// 注意：我们需要从 request.js 中获取 API 的基础 URL
+	// 从 request.js 中获取 API 的基础 URL
 	import { BASE_URL } from '@/utils/request.js';
 
 	export default {

@@ -31,6 +31,7 @@
 <script>
 	import request from '@/utils/request.js'
 	import { mapState, mapMutations } from 'vuex'
+	import { BASE_URL } from '@/utils/request.js';
 
 	export default {
 		data() {

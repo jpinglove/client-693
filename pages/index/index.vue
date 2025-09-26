@@ -4,7 +4,7 @@
 		<input class="search-bar" @confirm="onSearch" placeholder="搜索商品标题" v-model="searchValue" />
 		
 		<!-- 加载中提示 -->
-		<view v-if="loading" class="empty-container">
+		<view v-if="isFirstLoad" class="empty-container">
 			<text>正在加载中...</text>
 		</view>
 
@@ -29,31 +29,57 @@
 
 <script>
 	import request from '@/utils/request.js'
+	import { BASE_URL } from '@/utils/request.js'; // 导入 BASE_URL
+
 	export default {
 		data() {
 			return {
 				products: [],
 				searchValue: '',
-				loading: true // 新增一个加载状态
+				isFirstLoad: true,
+				hasLoaded: false,
 			}
+		},
+		onLoad() {
+			this.hasLoaded = true;
+			this.fetchProducts();
 		},
 		// onShow 会在每次页面显示时触发，比 onLoad 更适合刷新列表
 		onShow() {
-			this.fetchProducts();
+			if (!this.hasLoaded) {
+				this.fetchProducts();
+			}
+			this.hasLoaded = false;
+		},
+		// 下拉刷新功能
+		onPullDownRefresh() {
+			// 清空搜索框并重新加载数据
+			this.searchValue = ''; 
+			this.fetchProducts().then(() => {
+				uni.stopPullDownRefresh(); // 停止下拉刷新动画
+			});
 		},
 		methods: {
 			async fetchProducts(search = '') {
-				this.loading = true; // 开始加载
+				if (this.isFirstLoad) {
+
+				} else {
+					// 对于自动刷新和下拉刷新，可以给出更友好的提示，比如导航栏加载动画
+					uni.showNavigationBarLoading();
+				}
 				try {
 					const data = await request({
 						url: `/products?search=${search}`,
 						method: 'GET'
 					});
 					this.products = data;
+					console.log(this.products)
 				} catch (error) {
 					console.error(error);
+					this.products = [];
 				} finally {
-					this.loading = false; // 加载结束
+					this.isFirstLoad = false; // 加载结束
+					uni.hideNavigationBarLoading(); // 隐藏导航栏加载动画
 				}
 			},
 			onSearch(event) {

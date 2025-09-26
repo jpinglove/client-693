@@ -30,6 +30,7 @@
 <script>
 	import request from '@/utils/request.js';
 	import { mapState } from 'vuex';
+	import { BASE_URL } from '@/utils/request.js';
 
 	export default {
 		data() {
