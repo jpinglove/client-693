@@ -31,9 +31,14 @@
             "style": {
                 "navigationBarTitleText": "我的发布"
             }
+        }, {
+            "path": "pages/edit/edit",
+            "style": {
+                "navigationBarTitleText": "编辑商品"
+            }
         }
     ],
-    // ... globalStyle 和 tabBar 保持不变 ...
+    // globalStyle 和 tabBar
     "globalStyle": {
         "navigationBarTextStyle": "black",
         "navigationBarTitleText": "校园二手",
