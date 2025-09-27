@@ -46,7 +46,7 @@
 
 <script>
   import request from "@/utils/request.js";
-  import { mapState } from "vuex";
+  import { mapState, mapMutations } from 'vuex';
   import { BASE_URL } from "@/utils/request.js";
 
   export default {
@@ -76,13 +76,9 @@
     onLoad(options) {
       this.productId = options.id;
       this.fetchProductDetail();
-      uni.$on("dataChanged", this.handleDataChange);
-    },
-    onUnload() {
-      // 在页面卸载时移除监听
-      uni.$off("dataChanged", this.handleDataChange);
     },
     methods: {
+		...mapMutations(['SET_HOME_NEEDS_REFRESH']),
       async fetchProductDetail() {
         try {
           const data = await request({
@@ -145,6 +141,7 @@
                   data: { status: "sold" },
                 });
                 uni.showToast({ title: "下架成功" });
+				this.SET_HOME_NEEDS_REFRESH(true);
                 this.fetchProductDetail(); // 重新加载以更新状态
               } catch (error) {
                 uni.showToast({ title: "操作失败", icon: "none" });

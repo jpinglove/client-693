@@ -43,6 +43,7 @@
 <script>
   import request from "@/utils/request.js";
   import { BASE_URL } from "@/utils/request.js"; // 导入 BASE_URL
+  import { mapState, mapMutations } from 'vuex';
 
   export default {
     data() {
@@ -50,24 +51,24 @@
         products: [],
         searchValue: "",
         isFirstLoad: true,
-        hasLoaded: false,
       };
     },
+	computed: {
+		// 将 Vuex 的 state 映射到本组件的 computed 属性
+		...mapState(['homeNeedsRefresh'])
+	},
     onLoad() {
-      this.hasLoaded = true;
       this.fetchProducts();
-      uni.$on("dataChanged", this.handleDataChange);
     },
     // onShow 会在每次页面显示时触发，比 onLoad 更适合刷新列表
     onShow() {
-      if (!this.hasLoaded) {
-        this.fetchProducts();
-      }
-      this.hasLoaded = false;
-    },
-    onUnload() {
-      //  在页面卸载时移除监听
-      uni.$off("dataChanged", this.handleDataChange);
+	  if (this.homeNeedsRefresh) {
+			console.log('Home page needs refresh! Fetching data...');
+			// 执行刷新
+			this.fetchProducts();
+			// 【重要】: 刷新后立刻重置标志位，避免重复刷新
+			this.SET_HOME_NEEDS_REFRESH(false);
+		}
     },
     // 下拉刷新功能
     onPullDownRefresh() {
@@ -78,11 +79,7 @@
       });
     },
     methods: {
-      handleDataChange() {
-        console.log("Index page received dataChanged event!");
-        // 接收到事件后，重新获取数据
-        this.fetchProducts();
-      },
+		...mapMutations(['SET_HOME_NEEDS_REFRESH']),
       async fetchProducts(search = "") {
         if (this.isFirstLoad) {
         } else {
@@ -114,7 +111,8 @@
       },
       getProductImageUrl(id) {
         // 拼接出完整的图片请求 URL
-        return `${BASE_URL}/products/${id}/image`;
+        return `${BASE_URL}/products/${id}/image?t=${new Date().getTime()}`;
+		//return `${BASE_URL}/products/${id}/image`;
       },
     },
   };

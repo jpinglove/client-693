@@ -65,6 +65,7 @@
 
 <script>
   import request, { BASE_URL } from "@/utils/request.js";
+  import { mapMutations } from 'vuex';
 
   export default {
     data() {
@@ -92,6 +93,7 @@
       this.fetchProductData();
     },
     methods: {
+		...mapMutations(['SET_HOME_NEEDS_REFRESH']),
       async fetchProductData() {
         try {
           const data = await request({ url: `/products/${this.productId}` });
@@ -162,7 +164,7 @@
       },
       onSaveSuccess() {
         uni.showToast({ title: "保存成功" });
-        uni.$emit("dataChanged");
+        this.SET_HOME_NEEDS_REFRESH(true);
         setTimeout(() => {
           uni.navigateBack();
         }, 1500);

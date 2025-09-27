@@ -53,7 +53,7 @@
     },
     methods: {
       getProductImageUrl(id) {
-        return `${BASE_URL}/products/${id}/image`;
+        return `${BASE_URL}/products/${id}/image?t=${new Date().getTime()}`;
       },
       goToDetail(id) {
         uni.navigateTo({
