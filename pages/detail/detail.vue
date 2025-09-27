@@ -2,27 +2,27 @@
 	<view class="container" v-if="product">
 		<image class="product-image-detail" :src="getProductImageUrl(productId)" mode="widthFix"></image>
 		<view class="product-card">
-			<text class="price">¥{{ product.price }}</text>
+			<view class="price-status">
+				<text class="price">¥{{ product.price }}</text>
+				<!-- 显示商品状态 -->
+				<text :class="['status-badge', product.status === 'sold' ? 'sold' : 'selling']">
+					{{ product.status === 'sold' ? '已售出' : '售卖中' }}
+				</text>
+			</view>
 			<text class="title">{{ product.title }}</text>
 			<text class="description">{{ product.description }}</text>
 			<view class="owner-info">
 				<text>发布者: {{ product.owner.nickname }}</text>
 			</view>
-			<button class="favorite-btn" @click="favoriteProduct">
+
+			<!-- 收藏按钮 -->
+			<button v-if="product.status === 'selling'" class="favorite-btn" @click="favoriteProduct">
 				{{ isFavorited ? '取消收藏' : '收藏' }}
 			</button>
-		</view>
-
-		<view class="comments-section">
-			<text class="section-title">留言区</text>
-			<view class="comment-item" v-for="comment in product.comments" :key="comment._id">
-				<text class="comment-user">{{ comment.nickname }}:</text>
-				<text class="comment-content">{{ comment.content }}</text>
-			</view>
-			<view class="comment-form">
-				<input v-model="commentContent" placeholder="发表你的留言..." />
-				<button @click="addComment">提交</button>
-			</view>
+			<!-- 下架按钮，仅当用户是所有者且商品在售时显示 -->
+			<button v-if="isOwner && product.status === 'selling'" class="sold-btn" @click="markAsSold">
+				标记为已售出 (下架)
+			</button>
 		</view>
 	</view>
 </template>
@@ -47,6 +47,9 @@
 					return this.product.favoritedBy.includes(this.userInfo.id);
 				}
 				return false;
+			},
+			isOwner() {
+				return this.product && this.userInfo && this.product.owner._id === this.userInfo.id;
 			}
 		},
 		onLoad(options) {
@@ -102,6 +105,28 @@
 					uni.showToast({ title: '操作失败', icon: 'none' });
 				}
 			},
+			// 下架商品的方法
+			async markAsSold() {
+				uni.showModal({
+					title: '确认',
+					content: '确定要下架此商品吗？此操作不可逆。',
+					success: async (res) => {
+						if (res.confirm) {
+							try {
+								await request({
+									url: `/products/${this.productId}/status`,
+									method: 'PUT',
+									data: { status: 'sold' }
+								});
+								uni.showToast({ title: '下架成功' });
+								this.fetchProductDetail(); // 重新加载以更新状态
+							} catch (error) {
+								uni.showToast({ title: '操作失败', icon: 'none' });
+							}
+						}
+					}
+				});
+			},
 			getProductImageUrl(id) {
 				// 拼接出完整的图片请求 URL
 				return `${BASE_URL}/products/${id}/image`;
@@ -122,4 +147,9 @@
 .comment-item { border-bottom: 1px solid #eee; padding: 10rpx 0; }
 .comment-user { font-weight: bold; margin-right: 10rpx; }
 .comment-form { display: flex; margin-top: 20rpx; }
+.price-status { display: flex; justify-content: space-between; align-items: center; }
+.status-badge { padding: 5rpx 15rpx; border-radius: 20rpx; color: #fff; font-size: 24rpx; }
+.selling { background-color: #28a745; }
+.sold { background-color: #dc3545; }
+.sold-btn { margin-top: 20rpx; background-color: #ffc107; color: #333; }
 </style>
