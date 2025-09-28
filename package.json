@@ -4,7 +4,8 @@
   "description": "Uni-app client for campus trading.",
   "scripts": {
     "dev:h5": "uni -p h5",
-    "build:h5": "uni build -p h5"
+    "build:h5": "uni build -p h5",
+	"build": "uni build -p h5"
   },
   "dependencies": {
     "vue": "^2.6.14",
