@@ -50,12 +50,38 @@
       return {
         products: [],
         searchValue: "",
-        isFirstLoad: true,
+        loading: true,
+		
+		// -- 新增的排序和筛选数据 --
+		filters: {
+			search: "",
+			campus: "",
+			condition: "",
+			priceMin: "",
+			priceMax: "",
+		},
+		// 临时存储抽屉中的筛选条件，点击确认再生效
+		tempFilters: {}, 
+		sort: { sortBy: 'createdAt', sortOrder: 'desc' },
+		sortIndex: 0,
+		sortOptions: [
+			{ value: { sortBy: 'createdAt', sortOrder: 'desc' }, text: '最新发布' },
+			{ value: { sortBy: 'price', sortOrder: 'asc' }, text: '价格最低' },
+			{ value: { sortBy: 'price', sortOrder: 'desc' }, text: '价格最高' },
+			{ value: { sortBy: 'viewCount', sortOrder: 'desc' }, text: '热度最高' }
+		],
+		conditionOptions: ['全新', '九成新', '八成新', '轻微瑕疵'],
+		conditionIndex: -1 // 初始不选中任何项
+
       };
     },
 	computed: {
 		// 将 Vuex 的 state 映射到本组件的 computed 属性
-		...mapState(['homeNeedsRefresh'])
+		...mapState(['homeNeedsRefresh']),
+		// 计算属性，用于显示当前排序文本
+		currentSortText() {
+						return this.sortOptions[this.sortIndex].text;
+					}
 	},
     onLoad() {
       this.fetchProducts();
@@ -81,11 +107,19 @@
     methods: {
 		...mapMutations(['SET_HOME_NEEDS_REFRESH']),
       async fetchProducts(search = "") {
-        if (this.isFirstLoad) {
+        if (this.loading) {
         } else {
           // 对于自动刷新和下拉刷新，可以给出更友好的提示，比如导航栏加载动画
           uni.showNavigationBarLoading();
         }
+		
+		// 将 filters 和 sort 对象转换成 URL 查询字符串
+		const params = { ...this.filters, ...this.sort };
+		const queryString = Object.keys(params)
+			.filter(key => params[key] !== '' && params[key] !== null && params[key] !== undefined)
+			.map(key => `${key}=${encodeURIComponent(params[key])}`)
+			.join('&');
+
         try {
           const data = await request({
             url: `/products?search=${search}`,
@@ -97,13 +131,53 @@
           console.error(error);
           this.products = [];
         } finally {
-          this.isFirstLoad = false; // 加载结束
+          this.loading = false; // 加载结束
           uni.hideNavigationBarLoading(); // 隐藏导航栏加载动画
         }
       },
       onSearch(event) {
-        this.fetchProducts(event.detail.value);
+        this.fetchProducts();
+        // this.fetchProducts(event.detail.value);
       },
+	// 排序和筛选相关的方法
+	onSortChange(e) {
+		this.sortIndex = e.detail.value;
+		this.sort = this.sortOptions[this.sortIndex].value;
+		this.fetchProducts();
+	},
+
+	openFilterDrawer() {
+		// 打开抽屉时，将当前生效的筛选条件同步给临时变量
+		this.tempFilters = JSON.parse(JSON.stringify(this.filters));
+		// 同步picker的选中项
+		this.conditionIndex = this.conditionOptions.indexOf(this.tempFilters.condition);
+		this.$refs.filterDrawer.open();
+	},
+	
+	onConditionChange(e) {
+		this.conditionIndex = e.detail.value;
+		this.tempFilters.condition = this.conditionOptions[this.conditionIndex];
+	},
+
+	applyFilters() {
+		// 点击确认时，将临时筛选条件应用到正式的筛选条件，并触发数据请求
+		this.filters = JSON.parse(JSON.stringify(this.tempFilters));
+		this.fetchProducts();
+		this.$refs.filterDrawer.close();
+	},
+
+	resetFilters() {
+		// 重置临时筛选条件
+		this.tempFilters = {
+			search: this.filters.search, // 保留搜索框的内容
+			campus: "",
+			condition: "",
+			priceMin: "",
+			priceMax: "",
+		};
+		this.conditionIndex = -1;
+	},
+				
       goToDetail(id) {
         uni.navigateTo({
           url: `/pages/detail/detail?id=${id}`,
@@ -167,4 +241,82 @@
     height: 200rpx;
     margin-bottom: 20rpx;
   }
+  
+  /* 排序筛选栏样式 */
+  	.filter-bar {
+  		display: flex;
+  		justify-content: space-around;
+  		align-items: center;
+  		padding: 15rpx;
+  		background: #fff;
+  		border-bottom: 1px solid #f0f0f0;
+  		font-size: 28rpx;
+  	}
+  	.sort-picker .picker-content {
+  		display: flex;
+  		align-items: center;
+  	}
+  	.arrow-down {
+  		margin-left: 8rpx;
+  		font-size: 20rpx;
+  		color: #999;
+  	}
+  	.filter-btn {
+  		display: flex;
+  		align-items: center;
+  		color: #007AFF;
+  	}
+  	.filter-icon {
+  		width: 32rpx;
+  		height: 32rpx;
+  		margin-right: 8rpx;
+  	}
+  	
+  	/* 【新增】抽屉样式 */
+  	.filter-drawer-content {
+  		padding: 30rpx;
+  	}
+  	.drawer-title {
+  		font-size: 32rpx;
+  		font-weight: bold;
+  		margin-bottom: 40rpx;
+  		display: block;
+  	}
+  	.form-group {
+  		margin-bottom: 30rpx;
+  	}
+  	.form-label {
+  		font-size: 28rpx;
+  		color: #666;
+  		margin-bottom: 10rpx;
+  		display: block;
+  	}
+  	.form-input {
+  		border: 1px solid #eee;
+  		padding: 15rpx;
+  		border-radius: 5rpx;
+  		font-size: 28rpx;
+  	}
+  	.price-range {
+  		display: flex;
+  		align-items: center;
+  	}
+  	.price-separator {
+  		margin: 0 15rpx;
+  		color: #999;
+  	}
+  	.picker-input {
+  		color: #333; /* 确保picker有正常的文字颜色 */
+  	}
+  	.drawer-buttons {
+  		display: flex;
+  		margin-top: 50rpx;
+  	}
+  	.drawer-btn {
+  		flex: 1;
+  	}
+  	.reset-btn {
+  		margin-right: 15rpx;
+  	}
+  
 </style>

@@ -6,6 +6,19 @@
 			<input class="form-input" v-model="formData.price" type="number" placeholder="价格" />
 			<input class="form-input" v-model="formData.category" placeholder="分类 (如图书、电子产品)" />
 			
+			<view class="form-group">
+			    <text class="form-label">校区</text>
+			    <picker @change="onCampusChange" :value="campusIndex" :range="campusOptions">
+			        <view class="form-input">{{ campusOptions[campusIndex] }}</view>
+			    </picker>
+			</view>
+			<view class="form-group">
+			    <text class="form-label">新旧程度</text>
+			    <picker @change="onConditionChange" :value="conditionIndex" :range="conditionOptions">
+			        <view class="form-input">{{ conditionOptions[conditionIndex] }}</view>
+			    </picker>
+			</view>
+			
 			<!-- 图片上传区 -->
 			<view class="image-uploader">
 				<view v-if="!imagePreview" class="upload-btn" @click="chooseImage">
@@ -38,7 +51,11 @@
 				},
 				imageTempPath: '', // 存储选择的图片的临时路径
 				imagePreview: '', // 用于预览图片
-				uploading: false
+				uploading: false,
+				campusOptions: ['主校区', '南校区', '北校区'],
+				campusIndex: 0,
+				conditionOptions: ['全新', '九成新', '八成新', '轻微瑕疵'],
+				conditionIndex: 0
 			};
 		},
 		onShow() {
@@ -49,6 +66,10 @@
 		},
 		methods: {
 			...mapMutations(['SET_HOME_NEEDS_REFRESH']),
+			onCampusChange(e) {
+				this.campusIndex = e.detail.value;
+				this.formData.campus = this.campusOptions[this.campusIndex];
+			},
 			chooseImage() {
 				uni.chooseImage({
 					count: 1, // 只选择一张

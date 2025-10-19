@@ -38,6 +38,19 @@
           placeholder="如: 图书、电子产品"
         />
       </view>
+	  
+	  <view class="form-group">
+	      <text class="form-label">校区</text>
+	      <picker @change="onCampusChange" :value="campusIndex" :range="campusOptions">
+	          <view class="form-input">{{ campusOptions[campusIndex] }}</view>
+	      </picker>
+	  </view>
+	  <view class="form-group">
+	      <text class="form-label">新旧程度</text>
+	      <picker @change="onConditionChange" :value="conditionIndex" :range="conditionOptions">
+	          <view class="form-input">{{ conditionOptions[conditionIndex] }}</view>
+	      </picker>
+	  </view>
 
       <view class="form-group">
         <text class="form-label">商品图片</text>
@@ -81,6 +94,10 @@
         },
         imageTempPath: "",
         imagePreview: "",
+		campusOptions: ['主校区', '南校区', '北校区'],
+		campusIndex: 0,
+		conditionOptions: ['全新', '九成新', '八成新', '轻微瑕疵'],
+		conditionIndex: 0
       };
     },
     onLoad(options) {
@@ -109,6 +126,10 @@
           uni.showToast({ title: "加载商品信息失败", icon: "none" });
         }
       },
+	  onCampusChange(e) {
+		  this.campusIndex = e.detail.value;
+		  this.formData.campus = this.campusOptions[this.campusIndex];
+	  },
       chooseImage() {
         uni.chooseImage({
           count: 1,
