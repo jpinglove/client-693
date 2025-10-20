@@ -1,15 +1,32 @@
 <template>
   <view class="content">
     <!-- 搜索框 -->
-    <input
-      class="search-bar"
-      @confirm="onSearch"
-      placeholder="搜索商品标题"
-      v-model="searchValue"
-    />
-
+		<view class="search-bar-container">
+			<input
+				class="search-bar"
+				@confirm="onSearch"
+				placeholder="搜索商品标题"
+				v-model="filters.search"
+			/>
+		</view>
+		
+		<!-- 【新增】排序与筛选栏 -->
+		<view class="filter-bar">
+			<picker class="sort-picker" @change="onSortChange" :value="sortIndex" :range="sortOptions" range-key="text">
+				<view class="picker-content">
+					<!-- 使用 computed 属性动态显示当前排序文本 -->
+					<text>{{ currentSortText }}</text>
+					<text class="arrow-down">▼</text>
+				</view>
+			</picker>
+			<view class="filter-btn" @click="openFilterDrawer">
+				<image class="filter-icon" src="/static/filter.png"></image>
+				<text>筛选</text>
+			</view>
+		</view>
+		
     <!-- 加载中提示 -->
-    <view v-if="isFirstLoad" class="empty-container">
+    <view v-if="loading" class="empty-container">
       <text>正在加载中...</text>
     </view>
 
@@ -37,6 +54,38 @@
       <image class="empty-image" src="/static/empty.png"></image>
       <text class="empty-text">市场空空如也，快来发布你的第一件商品吧！</text>
     </view>
+	
+	<!-- 【新增】筛选抽屉组件 -->
+	<uni-drawer ref="filterDrawer" mode="right" :width="320">
+		<view class="filter-drawer-content">
+			<text class="drawer-title">筛选条件</text>
+			
+			<view class="form-group">
+				<text class="form-label">校区</text>
+				<input class="form-input" v-model="tempFilters.campus" placeholder="如: 主校区, 南校区" />
+			</view>
+			<view class="form-group">
+				<text class="form-label">新旧程度</text>
+				<picker class="condition-picker" @change="onConditionChange" :value="conditionIndex" :range="conditionOptions">
+					<view class="form-input picker-input">{{ tempFilters.condition || '请选择' }}</view>
+				</picker>
+			</view>
+			<view class="form-group">
+				<text class="form-label">价格区间</text>
+				<view class="price-range">
+					<input class="form-input" type="number" v-model="tempFilters.priceMin" placeholder="最低价" />
+					<text class="price-separator">-</text>
+					<input class="form-input" type="number" v-model="tempFilters.priceMax" placeholder="最高价" />
+				</view>
+			</view>
+
+			<view class="drawer-buttons">
+				<button class="drawer-btn reset-btn" size="mini" @click="resetFilters">重置</button>
+				<button class="drawer-btn confirm-btn" size="mini" @click="applyFilters">确认</button>
+			</view>
+		</view>
+	</uni-drawer>
+			
   </view>
 </template>
 
@@ -44,12 +93,20 @@
   import request from "@/utils/request.js";
   import { BASE_URL } from "@/utils/request.js"; // 导入 BASE_URL
   import { mapState, mapMutations } from 'vuex';
+  // import uniDrawer from '@/uni_modules/uni-drawer/components/uni-drawer/uni-drawer.vue';
+  import uniDrawer from '@/node_modules/@dcloudio/uni-ui/lib/uni-drawer/uni-drawer.vue';
 
   export default {
+	  // 安装 uni-ui
+	// npm i @dcloudio/uni-ui
+	  // 在 components 选项中注册它
+	components: {
+		uniDrawer
+	},
     data() {
       return {
         products: [],
-        searchValue: "",
+        // searchValue: "",
         loading: true,
 		
 		// -- 新增的排序和筛选数据 --
@@ -80,8 +137,8 @@
 		...mapState(['homeNeedsRefresh']),
 		// 计算属性，用于显示当前排序文本
 		currentSortText() {
-						return this.sortOptions[this.sortIndex].text;
-					}
+			return this.sortOptions[this.sortIndex].text;
+		}
 	},
     onLoad() {
       this.fetchProducts();
@@ -272,7 +329,7 @@
   		margin-right: 8rpx;
   	}
   	
-  	/* 【新增】抽屉样式 */
+  	/* 抽屉样式 */
   	.filter-drawer-content {
   		padding: 30rpx;
   	}
