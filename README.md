@@ -36,3 +36,13 @@ export const BASE_URL = process.env.NODE_ENV === 'development'
     ```bash
     客户端-> run -> webbrowser
     ```
+
+**安装 uni-ui**：
+    ```bash
+    npm i @dcloudio/uni-ui
+    ```
+
+**代码中导入 uni-ui**：
+	```bash
+	  import uniDrawer from '@/node_modules/@dcloudio/uni-ui/lib/uni-drawer/uni-drawer.vue';
+	```
