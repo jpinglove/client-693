@@ -47,7 +47,9 @@
 					title: '',
 					description: '',
 					price: null,
-					category: ''
+					category: '',
+					campus: '',
+					condition: ''
 				},
 				imageTempPath: '', // 存储选择的图片的临时路径
 				imagePreview: '', // 用于预览图片
@@ -69,6 +71,10 @@
 			onCampusChange(e) {
 				this.campusIndex = e.detail.value;
 				this.formData.campus = this.campusOptions[this.campusIndex];
+			},
+			onConditionChange(e) {
+				this.conditionIndex = e.detail.value;
+				this.formData.condition = this.conditionOptions[this.conditionIndex];
 			},
 			chooseImage() {
 				uni.chooseImage({
@@ -96,7 +102,9 @@
 				}
 
 				this.uploading = true;
-
+				this.formData.campus = this.campusOptions[this.campusIndex];
+				this.formData.condition = this.conditionOptions[this.conditionIndex];
+				
 				uni.uploadFile({
 					url: BASE_URL + '/products', // 完整的上传地址
 					filePath: this.imageTempPath,

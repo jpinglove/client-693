@@ -17,8 +17,25 @@
 					<text class="menu-text">我的收藏</text>
 					<text class="arrow"> > </text>
 				</view>
+				<view class="menu-item" @click="goToList('orders')">
+					<image class="menu-icon" src="/static/order.png"></image>
+					<text class="menu-text">订单记录</text>
+					<text class="arrow"> > </text>
+				</view>
+				<view class="menu-item" @click="goToList('view-history')">
+					<image class="menu-icon" src="/static/history.png"></image>
+					<text class="menu-text">浏览记录</text>
+					<text class="arrow"> > </text>
+				</view>
 			</view>
-			
+			<!-- 管理员入口 (简单判断) -->
+			<view class="menu-list" v-if="isAdmin">
+				<view class="menu-item" @click="goToList('admin')">
+					<image class="menu-icon" src="/static/dashboard.png"></image>
+					<text class="menu-text">后台管理</text>
+					<text class="arrow"> > </text>
+				</view>
+			</view>
 			<button class="logout-btn" @click="logout">退出登录</button>
 		</view>
 
@@ -65,14 +82,23 @@
 			};
 		},
 		computed: {
-			...mapState(['token', 'userInfo'])
+			...mapState(['token', 'userInfo']),
+			isAdmin() {
+				return this.userInfo && this.userInfo.studentId === 'admin';
+			}
 		},
 		methods: {
 			...mapMutations(['LOGIN', 'LOGOUT']),
 			goToList(page) {
-				uni.navigateTo({
+				// 对于 admin，路径不同
+				if (page === 'admin') {
+					uni.navigateTo({ url: `/pages/admin/admin` });
+				} else {
+					uni.navigateTo({ url: `/pages/${page}/${page}` });
+				}
+/* 				uni.navigateTo({
 					url: `/pages/${page}/${page}`
-				});
+				}); */
 			},
 			async handleLogin() {
 				try {

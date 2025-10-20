@@ -76,6 +76,8 @@
     onLoad(options) {
       this.productId = options.id;
       this.fetchProductDetail();
+	  // 调用增加浏览量的接口 (无需等待其完成)
+	  this.incrementViewCount();
     },
     methods: {
 		...mapMutations(['SET_HOME_NEEDS_REFRESH']),
@@ -154,6 +156,17 @@
         // 拼接出完整的图片请求 URL
         return `${BASE_URL}/products/${id}/image`;
       },
+	  // 增加浏览量的方法
+		incrementViewCount() {
+			if (this.$store.state.token) {
+				request({
+					url: `/products/${this.productId}/view`,
+					method: 'PUT'
+				}).catch(err => {
+					console.error("增加浏览数量失败", err);
+				});
+			}
+		},
     },
   };
 </script>

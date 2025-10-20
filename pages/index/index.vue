@@ -93,7 +93,6 @@
   import request from "@/utils/request.js";
   import { BASE_URL } from "@/utils/request.js"; // 导入 BASE_URL
   import { mapState, mapMutations } from 'vuex';
-  // import uniDrawer from '@/uni_modules/uni-drawer/components/uni-drawer/uni-drawer.vue';
   import uniDrawer from '@/node_modules/@dcloudio/uni-ui/lib/uni-drawer/uni-drawer.vue';
 
   export default {
