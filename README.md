@@ -40,6 +40,7 @@ export const BASE_URL = process.env.NODE_ENV === 'development'
 **安装 uni-ui**：
     ```bash
     npm i @dcloudio/uni-ui
+	npm i @qiun/ucharts
     ```
 
 **代码中导入 uni-ui**：
