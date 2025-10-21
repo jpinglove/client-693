@@ -4,6 +4,9 @@
 		<view v-if="token">
 			<view class="profile-card">
 				<text class="welcome-text">欢迎, {{ userInfo.nickname }}</text>
+				<view v-if="isAdmin" class="admin-badge">
+					<text>管理员</text>
+				</view>
 			</view>
 
 			<view class="menu-list">
@@ -30,7 +33,7 @@
 			</view>
 			<!-- 管理员入口 (简单判断) -->
 			<view class="menu-list" v-if="isAdmin">
-				<view class="menu-item" @click="goToList('admin')">
+				<view class="menu-item" @click="goToAdminPage">
 					<image class="menu-icon" src="/static/dashboard.png"></image>
 					<text class="menu-text">后台管理</text>
 					<text class="arrow"> > </text>
@@ -84,21 +87,29 @@
 		computed: {
 			...mapState(['token', 'userInfo']),
 			isAdmin() {
-				return this.userInfo && this.userInfo.studentId === 'admin';
+				return this.userInfo && this.userInfo.isAdmin === true;
+				// return this.userInfo && this.userInfo.studentId === 'admin';
 			}
 		},
 		methods: {
 			...mapMutations(['LOGIN', 'LOGOUT']),
 			goToList(page) {
+				/*
 				// 对于 admin，路径不同
 				if (page === 'admin') {
 					uni.navigateTo({ url: `/pages/admin/admin` });
 				} else {
 					uni.navigateTo({ url: `/pages/${page}/${page}` });
 				}
-/* 				uni.navigateTo({
+				*/
+ 				uni.navigateTo({
 					url: `/pages/${page}/${page}`
-				}); */
+				}); 
+			},
+			goToAdminPage() {
+				uni.navigateTo({
+					url: '/pages/admin/admin'
+				});
 			},
 			async handleLogin() {
 				try {
@@ -107,8 +118,22 @@
 						method: 'POST',
 						data: this.loginForm
 					});
-					this.LOGIN({ token: res.accessToken, userInfo: { id: res.id, nickname: res.nickname } });
+					
+					// 【新增调试信息1】：打印从服务器收到的原始响应
+					console.log('-------------------------------------------');
+					console.log('[CLIENT DEBUG] Received response from server:');
+					console.log(JSON.stringify(res, null, 2)); // 使用 JSON.stringify 格式化输出，更清晰
+					console.log('-------------------------------------------');
+					
+					
+					this.LOGIN({ token: res.accessToken, userInfo: { id: res.id, studentId: res.studentId, nickname: res.nickname, isAdmin: res.isAdmin } });
 					uni.showToast({ title: '登录成功' });
+					
+					if (userInfo.isAdmin == true){
+						uni.showToast({ title: '管理员' });
+						console.log("管理员 isAdmin")
+					} 
+					
 				} catch (error) {
 					uni.showToast({ title: '登录失败，请检查学号或密码', icon: 'none' });
 				}
@@ -136,7 +161,7 @@
 
 <style>
 .container { padding-bottom: 40rpx; }
-.profile-card, .form-card { background: #fff; padding: 30rpx; border-radius: 10rpx; text-align: center; }
+.profile-card, .form-card { background: #fff; padding: 30rpx; border-radius: 10rpx; text-align: center; position: relative; }
 .welcome-text { font-size: 36rpx; display: block; margin-bottom: 40rpx; }
 .logout-btn { background-color: #f44336; color: #fff; margin: 40rpx 20rpx 0; }
 .form-input { border: 1px solid #eee; padding: 15rpx; margin-bottom: 20rpx; text-align: left; }
@@ -148,4 +173,25 @@
 .menu-icon { width: 40rpx; height: 40rpx; margin-right: 20rpx; }
 .menu-text { flex: 1; }
 .arrow { color: #ccc; }
+
+
+.admin-badge {
+	position: absolute;
+	top: 20rpx;
+	right: 20rpx;
+	background-color: #ffc107;
+	color: #333;
+	padding: 5rpx 15rpx;
+	border-radius: 20rpx;
+	font-size: 24rpx;
+	font-weight: bold;
+}
+.admin-section {
+	border: 2px solid #ffc107;
+}
+.admin-text {
+	color: #007AFF;
+	font-weight: bold;
+}
+
 </style>

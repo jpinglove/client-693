@@ -141,7 +141,7 @@
 .form-input { border: 1px solid #eee; padding: 15rpx; margin-bottom: 20rpx; }
 .form-textarea-description { border: 1px solid #eee; padding: 15rpx; margin-bottom: 20rpx; width: auto; height: 200rpx; }
 .submit-btn { background-color: #007AFF; color: #fff; margin-top: 20rpx; }
-/* 新增图片上传样式 */
+/* 图片上传样式 */
 .image-uploader { margin-bottom: 20rpx; }
 .upload-btn { width: 200rpx; height: 200rpx; border: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #999; }
 .plus-icon { font-size: 60rpx; }

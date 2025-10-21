@@ -10,7 +10,7 @@
 			/>
 		</view>
 		
-		<!-- 【新增】排序与筛选栏 -->
+		<!-- 排序与筛选栏 -->
 		<view class="filter-bar">
 			<picker class="sort-picker" @change="onSortChange" :value="sortIndex" :range="sortOptions" range-key="text">
 				<view class="picker-content">
@@ -55,7 +55,7 @@
       <text class="empty-text">市场空空如也，快来发布你的第一件商品吧！</text>
     </view>
 	
-	<!-- 【新增】筛选抽屉组件 -->
+	<!-- 筛选抽屉组件 -->
 	<uni-drawer ref="filterDrawer" mode="right" :width="320">
 		<view class="filter-drawer-content">
 			<text class="drawer-title">筛选条件</text>
@@ -108,7 +108,7 @@
         // searchValue: "",
         loading: true,
 		
-		// -- 新增的排序和筛选数据 --
+		// -- 排序和筛选数据 --
 		filters: {
 			search: "",
 			campus: "",
