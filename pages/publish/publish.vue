@@ -105,9 +105,7 @@
 			
 				this.formData.campus = this.campusOptions[this.campusIndex];
 				this.formData.condition = this.conditionOptions[this.conditionIndex];
-				
-				console.log(JSON.stringify(this.formData))
-				
+
 				uni.uploadFile({
 					url: BASE_URL + '/products', // 完整的上传地址
 					filePath: this.imageTempPath,

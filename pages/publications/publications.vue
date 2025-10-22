@@ -18,7 +18,6 @@
 	import { downloadFile } from '@/utils/downloader.js'; // 导入下载函数
 
   export default {
-    // components: { productList },
     data() {
       return { products: [] };
     },

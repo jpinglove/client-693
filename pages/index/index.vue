@@ -14,7 +14,6 @@
 		<view class="filter-bar">
 			<picker class="sort-picker" @change="onSortChange" :value="sortIndex" :range="sortOptions" range-key="text">
 				<view class="picker-content">
-					<!-- 使用 computed 属性动态显示当前排序文本 -->
 					<text>{{ currentSortText }}</text>
 					<text class="arrow-down">▼</text>
 				</view>
@@ -31,23 +30,8 @@
     </view>
 
     <!-- 商品列表 -->
-    <view v-else-if="products.length > 0" class="product-list">
-      <view
-        class="product-item"
-        v-for="product in products"
-        :key="product._id"
-        @click="goToDetail(product._id)"
-      >
-        <image
-          class="product-image"
-          :src="getProductImageUrl(product._id)"
-        ></image>
-        <view class="product-info">
-          <text class="product-title">{{ product.title }}</text>
-          <text class="product-price">¥{{ product.price }}</text>
-        </view>
-      </view>
-    </view>
+	<!-- 统一使用 <product-list> 组件来渲染列表 -->
+	<product-list v-else-if="products.length > 0" :products="products"></product-list>
 
     <!-- 空状态提示 -->
     <view v-else class="empty-container">
@@ -105,9 +89,7 @@
     data() {
       return {
         products: [],
-        // searchValue: "",
         loading: true,
-		
 		// -- 排序和筛选数据 --
 		filters: {
 			search: "",
@@ -118,7 +100,8 @@
 		},
 		// 临时存储抽屉中的筛选条件，点击确认再生效
 		tempFilters: {}, 
-		sort: { sortBy: 'createdAt', sortOrder: 'desc' },
+		sortBy: 'createdAt',
+		sortOrder: 'desc',
 		sortIndex: 0,
 		sortOptions: [
 			{ value: { sortBy: 'createdAt', sortOrder: 'desc' }, text: '最新发布' },
@@ -162,7 +145,7 @@
     },
     methods: {
 		...mapMutations(['SET_HOME_NEEDS_REFRESH']),
-      async fetchProducts(search = "") {
+      async fetchProducts() {
         if (this.loading) {
         } else {
           // 对于自动刷新和下拉刷新，可以给出更友好的提示，比如导航栏加载动画
@@ -170,19 +153,23 @@
         }
 		
 		// 将 filters 和 sort 对象转换成 URL 查询字符串
-		const params = { ...this.filters, ...this.sort };
+		const params = { 
+			...this.filters,
+			sortBy: this.sortBy,
+			sortOrder: this.sortOrder
+		};
+		console.log('Fetching products with params:', params);
+		
 		const queryString = Object.keys(params)
 			.filter(key => params[key] !== '' && params[key] !== null && params[key] !== undefined)
 			.map(key => `${key}=${encodeURIComponent(params[key])}`)
 			.join('&');
+		
+		console.log('Fetching products with query:', queryString);
 
-        try {
-          const data = await request({
-            url: `/products?search=${search}`,
-            method: "GET",
-          });
-          this.products = data;
-          console.log(this.products);
+		try {
+			const data = await request({ url: `/products?${queryString}` });
+			this.products = data;
         } catch (error) {
           console.error(error);
           this.products = [];
@@ -197,9 +184,27 @@
       },
 	// 排序和筛选相关的方法
 	onSortChange(e) {
-		this.sortIndex = e.detail.value;
-		this.sort = this.sortOptions[this.sortIndex].value;
-		this.fetchProducts();
+		const index = Number(e.detail.value);
+		const selectedOption = this.sortOptions[index];
+		console.log(JSON.stringify(this.sortOptions[index]))
+		console.log(JSON.stringify(selectedOption))
+		console.log(JSON.stringify(selectedOption['value']))
+		
+		const value = selectedOption['value']
+		
+		console.log('index =', e.detail.value)
+		if (selectedOption) {
+			console.log(JSON.stringify(value))
+			this.sortIndex = index;
+			this.sortBy = value.sortBy;
+			this.sortOrder = value.sortOrder;
+			
+			console.log('sortIndex =', index)
+			console.log('sortBy =', value.sortBy)
+			console.log('sortOrder =', value.sortOrder)
+			
+			this.fetchProducts();
+		}
 	},
 
 	openFilterDrawer() {
@@ -233,17 +238,6 @@
 		};
 		this.conditionIndex = -1;
 	},
-				
-      goToDetail(id) {
-        uni.navigateTo({
-          url: `/pages/detail/detail?id=${id}`,
-        });
-      },
-      getProductImageUrl(id) {
-        // 拼接出完整的图片请求 URL
-        return `${BASE_URL}/products/${id}/image?t=${new Date().getTime()}`;
-		//return `${BASE_URL}/products/${id}/image`;
-      },
     },
   };
 </script>

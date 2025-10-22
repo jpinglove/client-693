@@ -25,15 +25,15 @@ export function downloadFile(url, fileName) {
 		header: {
 			'Authorization': `Bearer ${store.state.token}`
 		},
-		// 关键：告诉服务器我们期望接收二进制数据
+		// 接收二进制数据
 		responseType: 'arraybuffer', 
 		success: (res) => {
 			// 检查响应头，判断返回的是 JSON 还是 CSV
 			const contentType = res.header['Content-Type'] || res.header['content-type'];
-			
-			// 后端返回了 JSON (说明没有数据)
+			// 后端返回了 JSON , 说明没有数据
 			if (contentType && contentType.includes('application/json')) {
-				// uni.request 会自动解析 JSON，但我们需要手动将 ArrayBuffer 转为字符串来解析
+				// uni.request 会自动解析 JSON，手动将 ArrayBuffer 转为字符串来解析
+				console.log('whwhwhw')
 				console.log(res.data)
 				const dataStr = arrayBufferToString(res.data);
 				console.log(dataStr)
@@ -48,6 +48,7 @@ export function downloadFile(url, fileName) {
 			} 
 			// 后端返回了 CSV 文件
 			else if (res.statusCode === 200) {
+
 				// 在 H5 平台，需要将 ArrayBuffer 转为 Blob URL 进行下载
 				// #ifdef H5
 				const blob = new Blob([res.data]);
