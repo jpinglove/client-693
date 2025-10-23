@@ -13,13 +13,7 @@
 				<button @click="exportData('/admin/export/products', 'all_products.csv')">导出商品</button>
 				<button @click="exportData('/admin/export/orders', 'all_orders.csv')">导出订单</button>
 			</view>
-		</view>
-		
-		<view class="admin-section">
-			<text class="section-title">数据导入</text>
-			<button @click="importProducts">导入商品 (CSV)</button>
-		</view>
-				
+		</view>				
 	</view>
 </template>
 <script>
@@ -62,31 +56,6 @@
 			exportData(url, fileName) {
 				downloadFile(url, fileName);
 			},
-			importProducts() {
-				uni.chooseFile({
-					count: 1,
-					extension: ['.csv'], // 仅允许选择 csv 文件
-					success: (res) => {
-						uni.showLoading({ title: '正在上传并导入...' });
-						uni.uploadFile({
-							url: BASE_URL + '/admin/import/products',
-							filePath: res.tempFilePaths[0],
-							name: 'file',
-							header: { 'Authorization': `Bearer ${this.$store.state.token}` },
-							success: (uploadRes) => {
-								const data = JSON.parse(uploadRes.data);
-								uni.showModal({ title: '导入结果', content: data.message, showCancel: false });
-							},
-							fail: () => {
-								uni.showToast({ title: '导入失败', icon: 'none' });
-							},
-							complete: () => {
-								uni.hideLoading();
-							}
-						});
-					}
-				});
-			}
 		}
 	}
 </script>
