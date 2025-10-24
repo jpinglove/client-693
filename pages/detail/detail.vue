@@ -32,7 +32,7 @@
       >
         {{ isFavorited ? "取消收藏" : "收藏" }}
       </button>
-      <!-- 下架按钮，仅当用户是所有者且商品在售时显示 -->
+      <!-- 下架按钮，当用户是所有者且商品在售时显示 -->
       <button
         v-if="isOwner && product.status === 'selling'"
         class="sold-btn"
@@ -43,7 +43,7 @@
     </view>
 	
 	
-			<!-- 当商品售出时显示评价区 -->
+		<!-- 当商品售出时显示评价区 -->
 		<view class="evaluation-section" v-if="product.status === 'sold'">
 			<text class="section-title">为卖家评价</text>
 			
