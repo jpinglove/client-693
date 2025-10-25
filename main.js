@@ -6,7 +6,8 @@ import productList from './components/product-list.vue'
 Vue.component('product-list', productList)
 import UchartsComponent from './components/ucharts.vue'
 Vue.component('ucharts', UchartsComponent)
-
+import CustomBarChart from './components/custom-bar-chart.vue'
+Vue.component('custom-bar-chart', CustomBarChart)
 
 Vue.config.productionTip = false
 App.mpType = 'app'
