@@ -1,30 +1,25 @@
 <template>
 	<view class="container">
 		
+ 		<view class="chart-card">
+			<text class="card-title">每日发布量趋势</text>
+			<view style="width: 100%; height: 500rpx;">
+				<echarts ref="echarts" :option="dailyPostsData" canvasId="echarts1" style="width: 100%; height: 300px;"></echarts>
+			</view>
+		</view> 
+
 		<view class="chart-card">
+			<text class="card-title">每日交易量趋势</text>
+			<echarts ref="echarts" :option="dailyTransactionsData" canvasId="echarts2" style="width: 100%; height: 300px;"></echarts>
+					</view>
+
+ 		<view class="chart-card">
 			<text class="card-title">热门分类销售统计</text>
 			<view style="width: 100%; height: 500rpx;">
-				<echarts-for-uniapp
-				      :echarts="echarts"
-				      :option="option"
-				      style="width: 100%; height: 300px;"
-				    />
-				<!-- <canvas canvas-id="hotCategoriesChartCanvas" id="hotCategoriesChartCanvas" class="charts"></canvas> -->
+				<echarts ref="echarts" :option="hotCategoriesData" canvasId="echarts3" style="width: 100%; height: 300px;"></echarts>
 			</view>
 		</view>
 		
-		<view class="chart-card">
-			<text class="card-title">每日发布量趋势</text>
-			<view style="width: 100%; height: 500rpx;">
-				<ucharts type="line" :chartData="dailyPostsData" v-if="dailyPostsData.categories" />
-			</view>
-		</view>
-		 
-		<view class="chart-card">
-			<text class="card-title">每日交易量趋势</text>
-			<custom-bar-chart :chartData="dailyTransactionsData" v-if="dailyTransactionsData.categories" />
-		</view>
-
 			
 		<view class="admin-section">
 			<text class="section-title">数据导出</text>
@@ -33,47 +28,21 @@
 				<button @click="exportData('/admin/export/products', 'all_products.csv')">导出商品</button>
 				<button @click="exportData('/admin/export/orders', 'all_orders.csv')">导出订单</button>
 			</view>
-		</view>				
+		</view>
+		
 	</view>
 </template>
 <script>
 	import request from '@/utils/request.js';
 	import { downloadFile } from '@/utils/downloader.js';
 	import { BASE_URL } from '@/utils/request.js';
-	import * as echarts from 'echarts';
-	import EchartsForUniapp from 'echarts-for-uniapp/dist/echarts.self';
-	let hotCategoriesChartInstance = null;
-
+	
 	export default {
-		components: {
-		    EchartsForUniapp
-		  },
 		data() {
 			return { 
 				dailyPostsData: {},
 				dailyTransactionsData: {},
-				
-				// 5. 将 echarts 核心库实例挂载到 data 上，以便传递给组件
-				  echarts: echarts,
-				  
-				  // 6. 准备 ECharts 的配置 (option)
-				  option: {
-					title: {
-					  text: 'ECharts 示例'
-					},
-					tooltip: {},
-					xAxis: {
-					  data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
-					},
-					yAxis: {},
-					series: [
-					  {
-						name: '销量',
-						type: 'bar',
-						data: [5, 20, 36, 10, 10, 20]
-					  }
-					]
-				}
+				hotCategoriesData: {},
 			}
 		},
 		onLoad() {
@@ -88,13 +57,36 @@
 			async fetchDailyPostsStats() {
 				try {
 					const stats = await request({ url: '/admin/stats/daily-posts' });
-					// 按照 uCharts 的格式组织数据
-					let chartData = {
-						categories: stats.map(item => item._id),
-						series: [{
-							name: "发布量",
-							data: stats.map(item => item.count)
-						}]
+					
+					const categories = stats.map(item => item._id);
+					const data = stats.map(item => item.count);
+					
+					// 按照 eCharts 的格式组织数据
+					const chartData = {
+						tooltip: {
+							trigger: 'axis'
+						},
+						grid: { // 调整图表边距，防止标签显示不全
+							left: '3%',
+							right: '4%',
+							bottom: '3%',
+							containLabel: true
+						},
+						xAxis: {
+							type: 'category',
+							boundaryGap: false, // 让折线图从Y轴0刻度开始
+							data: categories // X轴数据
+						},
+						yAxis: {
+							type: 'value'
+						},
+						series: [
+							{
+								name: '发布量',
+								type: 'line', // 明确指定为折线图
+								data: data // Y轴数据
+							}
+						]
 					};
 					this.dailyPostsData = chartData;
 				} catch (error) {
@@ -104,34 +96,98 @@
 			async fetchDailyTransactionsStats() {
 				try {
 					const stats = await request({ url: '/admin/stats/daily-transactions' });
-					// 格式化为图表需要的格式
-					let chartData = {
-						categories: stats.map(item => item._id), // X轴：日期
-						series: [{
-							name: "交易量",
-							data: stats.map(item => item.count) // Y轴：数量
-						}]
-					};					
-					this.dailyTransactionsData = chartData;
+					
+					const categories = stats.map(item => item._id);
+					const data = stats.map(item => item.count);
+
+					// ECharts 柱状图 option
+					const option = {
+						tooltip: {
+							trigger: 'axis',
+							axisPointer: {
+								type: 'shadow' // 鼠标悬浮时显示阴影指示器
+							}
+						},
+						grid: {
+							left: '3%',
+							right: '4%',
+							bottom: '3%',
+							containLabel: true
+						},
+						xAxis: {
+							type: 'category',
+							data: categories
+						},
+						yAxis: {
+							type: 'value'
+						},
+						series: [
+							{
+								name: '交易量',
+								type: 'bar', // 指定类型为柱状图
+								barWidth: '60%', // 柱子的宽度
+								data: data
+							}
+						]
+					};
+
+					this.dailyTransactionsData = option;
 				} catch (error) {
 					console.error("Failed to fetch daily transactions stats:", error);
 				}
 			},
-			// 获取热门分类销售统计数据的方法
+			// 获取热门分类销售统计数据
 			async fetchHotCategoriesStats() {
 				try {
 					const stats = await request({ url: '/admin/stats/hot-categories-by-sales' });
 					
-					// 将后端数据格式化为 wx-charts 需要的格式
-					// 饼图的数据格式非常简单，就是一个对象数组
-					const chartData = stats.map(item => ({
-						name: item._id, // 分类名
-						data: item.count, // 数量
-						// color: getRandomColor() 
-					}));
+					// 转换为 ECharts 饼图需要的格式
+					const pieData = stats.map(item => {
+						return {
+							name: item._id,   // id 映射为 name
+							value: item.count // count 映射为 value
+						}
+					});
 					
+					// ECharts的饼图 option
+					const option = {
+						backgroundColor: "#ffffff", // 背景色
+						tooltip: {
+							trigger: 'item', // 提示框触发类型：数据项
+							formatter: '{a} <br/>{b}: {c} ({d}%)' // 提示框格式
+						},
+						legend: {
+							orient: 'vertical', // 图例垂直排列
+							left: 10,
+							data: pieData.map(item => item.name) // 图例数据
+						},
+						series: [
+							{
+								name: '销售量',
+								type: 'pie',
+								radius: ['40%', '60%'], // 设置成环形图，内外半径
+								avoidLabelOverlap: false,
+								label: {
+									show: false, // 不在图上显示标签
+									position: 'center'
+								},
+								emphasis: {
+									label: {
+										show: true,
+										fontSize: '20',
+										fontWeight: 'bold'
+									}
+								},
+								labelLine: {
+									show: false
+								},
+								data: pieData // 核心数据
+							}
+						]
+					};
 
-
+					// option 对象赋值给 data 属性
+					this.hotCategoriesData = option;
 				} catch (error) {
 					console.error("Failed to fetch hot categories stats:", error);
 				}
@@ -140,6 +196,7 @@
 			exportData(url, fileName) {
 				downloadFile(url, fileName);
 			},
+
 		}
 	}
 </script>

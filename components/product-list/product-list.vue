@@ -41,6 +41,7 @@
 <script>
   import { BASE_URL } from "@/utils/request.js";
   export default {
+	name: 'product-list',
     props: {
       products: {
         type: Array,

@@ -77,15 +77,15 @@
   import request from "@/utils/request.js";
   import { BASE_URL } from "@/utils/request.js"; // 导入 BASE_URL
   import { mapState, mapMutations } from 'vuex';
-  import uniDrawer from '@/node_modules/@dcloudio/uni-ui/lib/uni-drawer/uni-drawer.vue';
+  // import uniDrawer from '@/node_modules/@dcloudio/uni-ui/lib/uni-drawer/uni-drawer.vue';
 
   export default {
 	  // 安装 uni-ui
 	// npm i @dcloudio/uni-ui
 	  // 在 components 选项中注册它
-	components: {
-		uniDrawer
-	},
+	// components: {
+	// 	uniDrawer
+	// },
     data() {
       return {
         products: [],
