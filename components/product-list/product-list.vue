@@ -10,6 +10,7 @@
           <view class="product-info">
             <text class="product-title">{{ product.title }}</text>
             <view class="bottom-info">
+				<text class="product-time">{{ formatTime(product.updatedAt) }}</text>
               <text class="product-price">¥{{ product.price }}</text>
               <text
                 :class="[
@@ -64,6 +65,30 @@
       onEdit(id) {
         this.$emit("edit", id);
       },
+		formatTime(isoString) {
+			if (!isoString) return '';
+
+			const date = new Date(isoString);
+			const now = new Date();
+			const diff = now.getTime() - date.getTime(); // 毫秒差
+			
+			const diffMinutes = Math.floor(diff / (1000 * 60));
+			const diffHours = Math.floor(diff / (1000 * 60 * 60));
+			const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+			
+			if (diffMinutes < 1) {
+				return '刚刚';
+			} else if (diffMinutes < 60) {
+				return `${diffMinutes}分钟前`;
+			} else if (diffHours < 24) {
+				return `${diffHours}小时前`;
+			} else if (diffDays < 7) {
+				return `${diffDays}天前`;
+			} else {
+				// 超过7天，直接显示日期
+				return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+			}
+		}
     },
   };
 </script>
@@ -95,6 +120,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+  .product-time {
+  	font-size: 15rpx;
+  	color: #999;
+  	/* 让价格和状态靠右 */
+  	margin-right: auto;
+  	padding-right: 20rpx;
   }
   .product-price {
     color: red;

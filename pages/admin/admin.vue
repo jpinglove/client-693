@@ -19,7 +19,6 @@
 				<echarts ref="echarts" :option="hotCategoriesData" canvasId="echarts3" style="width: 100%; height: 300px;"></echarts>
 			</view>
 		</view>
-		
 			
 		<view class="admin-section">
 			<text class="section-title">数据导出</text>
@@ -36,6 +35,8 @@
 	import request from '@/utils/request.js';
 	import { downloadFile } from '@/utils/downloader.js';
 	import { BASE_URL } from '@/utils/request.js';
+	// 插件市场
+	// https://ext.dcloud.net.cn/search?q=echart
 	
 	export default {
 		data() {
@@ -210,10 +211,7 @@
 .container { padding: 20rpx; }
 .chart-card { background-color: #fff; border-radius: 10rpx; padding: 20rpx; margin-bottom: 30rpx; }
 .card-title { font-size: 32rpx; font-weight: bold; display: block; margin-bottom: 20rpx; }
-.charts-box {
-  width: 100%;
-  height: 300px;
-}
+
 </style>
 
 
