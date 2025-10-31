@@ -137,7 +137,6 @@
 </script>
 
 <style>
-/* ... 其他样式保持不变 ... */
 .form-card { background: #fff; padding: 30rpx; border-radius: 10rpx; }
 .form-input { border: 1px solid #eee; padding: 15rpx; margin-bottom: 20rpx; }
 .form-textarea-description { border: 1px solid #eee; padding: 15rpx; margin-bottom: 20rpx; width: auto; height: 200rpx; }

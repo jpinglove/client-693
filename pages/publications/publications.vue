@@ -1,6 +1,5 @@
 <template>
   <view>
-    <!-- 列表组件，传入不同的数据和标题, 传入 showEditButton 并监听 @edit 事件 -->
 	<view class="header-bar">
 		<text class="page-title">我的发布</text>
 		<button class="import-btn" size="mini" @click="importProducts">导入CSV</button>
@@ -31,12 +30,11 @@
       this.fetchPublications();
     },
     onUnload() {
-      // 在页面卸载时移除监听，避免内存泄漏
+      // 在页面卸载时移除监听
       uni.$off("dataChanged", this.handleDataChange);
     },
     methods: {
       handleDataChange() {
-        console.log("My Publications page received dataChanged event!");
         // 接收到事件后，重新获取数据
         this.fetchPublications();
       },

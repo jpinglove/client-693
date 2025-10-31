@@ -4,7 +4,7 @@
 			<text>加载中...</text>
 		</view>
 		<view v-else>
-			<!-- 列表组件现在也会接收一个空状态的提示文本 -->
+			<!-- 空状态的提示文本 -->
 			<product-list :products="historyProducts" empty-text="你还没有浏览过任何商品哦~" title="浏览记录"></product-list>
 
 			<!-- 分页器只在总页数大于1时才显示 -->

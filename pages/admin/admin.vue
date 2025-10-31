@@ -11,7 +11,7 @@
 		<view class="chart-card">
 			<text class="card-title">每日交易量趋势</text>
 			<echarts ref="echarts" :option="dailyTransactionsData" canvasId="echarts2" style="width: 100%; height: 300px;"></echarts>
-					</view>
+		</view>
 
  		<view class="chart-card">
 			<text class="card-title">热门分类销售统计</text>
@@ -52,7 +52,6 @@
 			this.fetchHotCategoriesStats();
 		},
 		onReady() {
-
 		},
 		methods: {
 			async fetchDailyPostsStats() {
@@ -84,7 +83,7 @@
 						series: [
 							{
 								name: '发布量',
-								type: 'line', // 明确指定为折线图
+								type: 'line', // 指定为折线图
 								data: data // Y轴数据
 							}
 						]
@@ -182,7 +181,7 @@
 								labelLine: {
 									show: false
 								},
-								data: pieData // 核心数据
+								data: pieData // 数据
 							}
 						]
 					};
@@ -205,7 +204,14 @@
 <style>
 /* 管理员页面样式 */
 .admin-section { margin-top: 40rpx; background: #fff; padding: 20rpx; border-radius: 10rpx; }
-.section-title { /* ... */ }
+.section-title {
+	font-size: 32rpx;
+	font-weight: bold;
+	display: block;
+	margin-bottom: 30rpx;
+	padding-bottom: 20rpx;
+	border-bottom: 1px solid #f0f0f0;
+}
 .button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20rpx; margin-top: 20rpx; }
 
 .container { padding: 20rpx; }

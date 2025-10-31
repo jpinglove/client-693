@@ -115,6 +115,7 @@
     },
     computed: {
       ...mapState(['userInfo', 'token']),
+	  // 判断评价
 	  hasEvaluated() {
 			if (this.product && this.userInfo && this.product.evaluatedBy) {
 				return this.product.evaluatedBy.includes(this.userInfo.id);
@@ -138,7 +139,7 @@
     onLoad(options) {
       this.productId = options.id;
       this.fetchProductDetail();
-	  // 调用增加浏览量的接口 (无需等待其完成)
+	  // 增加浏览量
 	  this.incrementViewCount();
     },
     methods: {
@@ -175,7 +176,7 @@
 				uni.hideLoading();
 				uni.showToast({ title: '评价成功！' });
 
-				// 评价成功后，刷新页面数据以显示“您已评价过”
+				// 评价成功后，刷新页面/显示“您已评价过”
 				this.fetchProductDetail();
 
 			} catch (error) {

@@ -117,7 +117,7 @@
 	computed: {
 		// 将 Vuex 的 state 映射到本组件的 computed 属性
 		...mapState(['homeNeedsRefresh']),
-		// 计算属性，用于显示当前排序文本
+		// 计算属性，显示当前排序文本
 		currentSortText() {
 			return this.sortOptions[this.sortIndex].text;
 		}
@@ -128,7 +128,6 @@
     // onShow 会在每次页面显示时触发，比 onLoad 更适合刷新列表
     onShow() {
 	  if (this.homeNeedsRefresh) {
-			console.log('Home page needs refresh! Fetching data...');
 			// 执行刷新
 			this.fetchProducts();
 			// 刷新后立刻重置标志位，避免重复刷新
@@ -148,24 +147,23 @@
       async fetchProducts() {
         if (this.loading) {
         } else {
-          // 对于自动刷新和下拉刷新，可以给出更友好的提示，比如导航栏加载动画
+          // 动画
           uni.showNavigationBarLoading();
         }
 		
-		// 将 filters 和 sort 对象转换成 URL 查询字符串
+		// filters 和 sort 对象转换成 URL 查询字符串
 		const params = { 
 			...this.filters,
 			sortBy: this.sortBy,
 			sortOrder: this.sortOrder
 		};
-		console.log('Fetching products with params:', params);
 		
 		const queryString = Object.keys(params)
 			.filter(key => params[key] !== '' && params[key] !== null && params[key] !== undefined)
 			.map(key => `${key}=${encodeURIComponent(params[key])}`)
 			.join('&');
-		
-		console.log('Fetching products with query:', queryString);
+		// name=aa&age=22&studentid=123
+		console.log(queryString);
 
 		try {
 			const data = await request({ url: `/products?${queryString}` });
@@ -208,7 +206,7 @@
 	},
 
 	openFilterDrawer() {
-		// 打开抽屉时，将当前生效的筛选条件同步给临时变量
+		// 打开抽屉时，将当前生效的筛选条件传给变量
 		this.tempFilters = JSON.parse(JSON.stringify(this.filters));
 		// 同步picker的选中项
 		this.conditionIndex = this.conditionOptions.indexOf(this.tempFilters.condition);
@@ -243,7 +241,6 @@
 </script>
 
 <style>
-  /* 简单样式 */
   .search-bar {
     border: 1px solid #ccc;
     padding: 10rpx;

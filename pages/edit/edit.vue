@@ -120,14 +120,14 @@
           this.formData.description = data.description;
           this.formData.price = data.price;
           this.formData.category = data.category;
-		  this.formData.campus = data.campus || ''; // 如果后端没返回，给个默认值
-		  this.formData.condition = data.condition || ''; // 如果后端没返回，给个默认值
+		  this.formData.campus = data.campus || ''; // 默认值
+		  this.formData.condition = data.condition || ''; // 默认值
           
 		this.campusIndex = this.campusOptions.indexOf(this.formData.campus);
-		if (this.campusIndex === -1) this.campusIndex = 0; // 如果找不到，默认选第一个
+		if (this.campusIndex === -1) this.campusIndex = 0; // 默认选第一个
 
 		this.conditionIndex = this.conditionOptions.indexOf(this.formData.condition);
-		if (this.conditionIndex === -1) this.conditionIndex = 0; // 如果找不到，默认选第一个
+		if (this.conditionIndex === -1) this.conditionIndex = 0; // 默认选第一个
 		  
 		  this.imagePreview = `${BASE_URL}/products/${
             this.productId
@@ -231,7 +231,7 @@
   }
   .form-label {
     font-size: 30rpx;
-    color: #007aff; /* 醒目的蓝色 */
+    color: #007aff;
     margin-bottom: 10rpx;
     display: block;
   }

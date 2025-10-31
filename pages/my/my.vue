@@ -31,7 +31,7 @@
 					<text class="arrow"> > </text>
 				</view>
 			</view>
-			<!-- 管理员入口 (简单判断) -->
+			<!-- 管理员入口 -->
 			<view class="menu-list" v-if="isAdmin">
 				<view class="menu-item" @click="goToAdminPage">
 					<image class="menu-icon" src="/static/dashboard.png"></image>
@@ -88,20 +88,11 @@
 			...mapState(['token', 'userInfo']),
 			isAdmin() {
 				return this.userInfo && this.userInfo.isAdmin === true;
-				// return this.userInfo && this.userInfo.studentId === 'admin';
 			}
 		},
 		methods: {
 			...mapMutations(['LOGIN', 'LOGOUT']),
 			goToList(page) {
-				/*
-				// 对于 admin，路径不同
-				if (page === 'admin') {
-					uni.navigateTo({ url: `/pages/admin/admin` });
-				} else {
-					uni.navigateTo({ url: `/pages/${page}/${page}` });
-				}
-				*/
  				uni.navigateTo({
 					url: `/pages/${page}/${page}`
 				}); 
@@ -119,22 +110,18 @@
 						data: this.loginForm
 					});
 					
-					// 【新增调试信息1】：打印从服务器收到的原始响应
-					console.log('-------------------------------------------');
-					console.log('[CLIENT DEBUG] Received response from server:');
-					console.log(JSON.stringify(res, null, 2)); // 使用 JSON.stringify 格式化输出，更清晰
-					console.log('-------------------------------------------');
-					
-					
+					console.log(JSON.stringify(res))
 					this.LOGIN({ token: res.accessToken, userInfo: { id: res.id, studentId: res.studentId, nickname: res.nickname, isAdmin: res.isAdmin } });
 					uni.showToast({ title: '登录成功' });
 					
-					if (userInfo.isAdmin == true){
-						uni.showToast({ title: '管理员' });
+					if (res.isAdmin == true){
+						uni.showToast({ title: '管理员登陆成功' });
 						console.log("管理员 isAdmin")
 					} 
 					
 				} catch (error) {
+					console.log(error)
+					
 					uni.showToast({ title: '登录失败，请检查学号或密码', icon: 'none' });
 				}
 			},

@@ -11,6 +11,7 @@
             <text class="product-title">{{ product.title }}</text>
             <view class="bottom-info">
 				<text class="product-time">{{ formatTime(product.updatedAt) }}</text>
+				<text class="product-views">· {{ product.viewCount || 0 }} 次浏览</text>
               <text class="product-price">¥{{ product.price }}</text>
               <text
                 :class="[
@@ -85,7 +86,7 @@
 			} else if (diffDays < 7) {
 				return `${diffDays}天前`;
 			} else {
-				// 超过7天，直接显示日期
+				// 超过7天，显示日期
 				return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 			}
 		}
@@ -122,9 +123,8 @@
     align-items: center;
   }
   .product-time {
-  	font-size: 15rpx;
+  	font-size: 24rpx;
   	color: #999;
-  	/* 让价格和状态靠右 */
   	margin-right: auto;
   	padding-right: 20rpx;
   }
@@ -160,7 +160,7 @@
   .main-content {
     flex: 1;
     display: flex;
-  } /* 让主要内容占据大部分空间 */
+  }
   .edit-section {
     padding-left: 20rpx;
     border-left: 1px solid #f0f0f0;
@@ -178,5 +178,28 @@
     width: 32rpx;
     height: 32rpx;
     margin-right: 8rpx;
+  }
+  .meta-info {
+  	display: flex;
+  	align-items: center;
+  	font-size: 24rpx;
+  	color: #999;
+  	margin-right: auto;
+  }
+  .product-views {
+  	margin-left: 10rpx;
+	color: #999;
+	font-size: 20rpx;
+  }
+  .trade-info {
+  	display: flex;
+  	align-items: center;
+  }
+  
+  .product-price {
+  	color: red;
+  	font-weight: bold;
+  	font-size: 30rpx;
+  	margin-right: 15rpx;
   }
 </style>
